@@ -1,6 +1,10 @@
 import sys
+import logging
+logging.basicConfig(level=logging.INFO)
+
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QGuiApplication, QFont
+from PySide6.QtCore import Qt
 
 class MainWindow(QMainWindow):
 
@@ -14,14 +18,37 @@ class MainWindow(QMainWindow):
         height = (screen_geometry.height() * 0.7)
         self.setMinimumSize(width, height)
 
-        self.lablel1 = QLabel("Hejka :)", self)
+        self.label1 = QLabel("Hejka z lewej :)", self)
+        self.label2 = QLabel("Hejka ze środka :)", self)
+        self.label3 = QLabel("Hejka z prawej :)", self)
+
+        self.label1.setGeometry(50, 0, 200, 100)
+        self.label2.setGeometry(350, 0, 200, 100)
+        self.label3.setGeometry(650, 0, 200, 100)
+
+        self.label1.setAlignment(Qt.AlignVCenter | Qt.AlignLeft)
+        self.label2.setAlignment(Qt.AlignCenter)
+        self.label3.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+
+        font = QFont("Apotos", 13, QFont.Bold)
+        self.label1.setFont(font)
+        self.label2.setFont(font)
+        self.label3.setFont(font)
+
+        self.label1.setStyleSheet("background-color: #222; color: #ddd; padding: 8px;")
+        self.label2.setStyleSheet("background-color: #222; color: #ddd; padding: 8px;")
+        self.label3.setStyleSheet("background-color: #222; color: #ddd; padding: 8px;")
 
 
 def main():
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+    try:
+        app = QApplication(sys.argv)
+        window = MainWindow()
+        window.show()
+        logging.info("Application started successfully.")
+        sys.exit(app.exec())
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
