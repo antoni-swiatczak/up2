@@ -7,14 +7,14 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Fajna apka")
+        self.setWindowTitle("Fajna apka :)")
 
         screen_geometry = QGuiApplication.primaryScreen().geometry()
-        width = int(screen_geometry.width() * 0.7)
-        height = int(screen_geometry.height() * 0.7)
+        width = (screen_geometry.width() * 0.7)
+        height = (screen_geometry.height() * 0.7)
         self.setMinimumSize(width, height)
 
-        self.lablel1 = QLabel("Hejka", self)
+        self.lablel1 = QLabel("Hejka :)", self)
 
 
 def main():
