@@ -22,7 +22,7 @@ static void delete_btree(struct btree* node)
     }
 }
 
-struct btree* insert_btree(struct btree* root, int value)
+static struct btree* insert_node(struct btree* root, int value)
 {
     if (root == NULL)
     {
@@ -39,11 +39,11 @@ struct btree* insert_btree(struct btree* root, int value)
 
     if (value < root->value)
     {
-        root->left = insert_btree(root->left, value);
+        root->left = insert_node(root->left, value);
     }
     else
     {
-        root->right = insert_btree(root->right, value);
+        root->right = insert_node(root->right, value);
     }
     return root;
 }
@@ -78,7 +78,7 @@ static int btree_max(struct btree* root)
     return max;
 }
 
-static bool btree_exists(struct btree* root, int value)
+static bool node_exists(struct btree* root, int value)
 {
     if (root == NULL)
     {
@@ -129,10 +129,10 @@ int main()
     // algorytm wstawiania elementów do drzewa
     for (size_t i = 0; i < SIZE; i++)
     {
-        if (btree_exists(root, array[i]) != true)
+        if (node_exists(root, array[i]) != true)
         {
-            root = insert_btree(root, array[i]);
-            if (root == NULL && i == 0)
+            root = insert_node(root, array[i]);
+            if (root == NULL)
             {
                 printf("Memory allocation failed.\n");
                 free(array);
@@ -145,8 +145,8 @@ int main()
 
     printf("Wartosc minimalna: %d\n", btree_min(root));
     printf("Wartosc maksymalna: %d\n", btree_max(root));
-    printf("Czy istnieje w tablicy [ %d ]: %d\n", 1037, btree_exists(root, 1037));
-    printf("Czy istnieje w tablicy [ %d ]: %d\n", 929, btree_exists(root, 929));
+    printf("Czy istnieje w tablicy [ %d ]: %d\n", 1037, node_exists(root, 1037));
+    printf("Czy istnieje w tablicy [ %d ]: %d\n", 929, node_exists(root, 929));
 
 
     delete_btree(root);
