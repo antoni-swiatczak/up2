@@ -17,14 +17,11 @@ class MainWindow(QMainWindow):
         layout = QFormLayout()
 
         self.buttons = {}
+        self.order = [4, 2, 1, 3]
         for i, letter in enumerate(['A', 'B', 'C', 'D']):
             button = QPushButton(letter)
             button.clicked.connect(self.check_sequence)
-            if i%2 == 0:
-                layout.addRow(button)
-            else:
-                layout.addRow("")
-                layout.addRow(button)
+            layout.addRow(f"{self.order[i]}", button)
             self.buttons[letter] = button
 
         widget.setLayout(layout)
