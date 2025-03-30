@@ -7,11 +7,39 @@ from PySide6.QtGui import *
 from PySide6.QtCore import *
 
 class MainWindow(QMainWindow):
-
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("QHBoxLayout")
+        self.sequence = ['C', 'B', 'D', 'A']
+        self.current_index = 0
 
-        # start
+        widget = QWidget()
+        layout = QHBoxLayout()
+
+        self.buttons = {}
+        for letter in ['A', 'B', 'C', 'D']:
+            button = QPushButton(letter)
+            button.clicked.connect(self.check_sequence)
+            layout.addWidget(button)
+            self.buttons[letter] = button
+
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
+
+    def check_sequence(self):
+        sender = self.sender()
+        if sender.text() == self.sequence[self.current_index]:
+            sender.setStyleSheet("background-color: green")
+            self.current_index += 1
+            if self.current_index == len(self.sequence):
+                for btn in self.buttons.values():
+                    btn.setStyleSheet("background-color: gold")
+                self.current_index = 0
+        else:
+            for btn in self.buttons.values():
+                btn.setStyleSheet("")
+            self.current_index = 0
+
 
 
 def main():
