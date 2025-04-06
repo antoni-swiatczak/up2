@@ -22,8 +22,12 @@ class MainWindow(QMainWindow):
         self.box.setStyleSheet("background-color: black;")
         
         self.statusBar().showMessage("Gotowy")
+
         self.create_horizontal_menu()
         self.create_vertical_toolbar()
+
+        self.create_modal_button()
+        self.create_alert_button()
 
     def create_horizontal_menu(self):
         red_action = QAction("Czerwony", self)
@@ -85,6 +89,61 @@ class MainWindow(QMainWindow):
         toolbar.addSeparator()
         toolbar.addAction(blue_action)
         toolbar.addAction(yellow_action)
+
+    def create_modal_button(self):
+        modal_button = QPushButton("Otwórz Modal", self)
+        modal_button.setGeometry(50, 50, 150, 50)
+        modal_button.clicked.connect(self.open_modal)
+
+    def create_alert_button(self):
+        alert_button = QPushButton("Otwórz Alert", self)
+        alert_button.setGeometry(50, 120, 150, 50)
+        alert_button.clicked.connect(self.show_alert)
+
+    def open_modal(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Modal Dialog")
+        dialog.setGeometry(200, 200, 300, 200)
+
+        layout = QVBoxLayout()
+
+        question_label = QLabel("Czy chcesz zmienić kolor?")
+        layout.addWidget(question_label)
+
+        radiobutton_red = QRadioButton("Czerwony")
+        radiobutton_green = QRadioButton("Zielony")
+        layout.addWidget(radiobutton_red)
+        layout.addWidget(radiobutton_green)
+
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        layout.addWidget(button_box)
+
+        button_box.accepted.connect(lambda: self.handle_modal_accept(radiobutton_red.isChecked(), radiobutton_green.isChecked()))
+        button_box.rejected.connect(dialog.reject)
+
+        dialog.setLayout(layout)
+        dialog.exec()
+
+    def handle_modal_accept(self, is_red_selected, is_green_selected):
+        if is_red_selected:
+            self.change_box_color("red")
+        elif is_green_selected:
+            self.change_box_color("green")
+
+    def show_alert(self):
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Warning)
+        msg.setWindowTitle("Alert")
+        msg.setText("Czy na pewno chcesz kontynuować?")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        result = msg.exec()
+
+        if result == QMessageBox.Yes:
+            self.statusBar().showMessage("OK")
+        else:
+            self.statusBar().showMessage("ANULOWANO")
+            self.change_box_color("black")
 
     def change_box_color(self, color):
         self.box.setStyleSheet(f"background-color: {color};")
