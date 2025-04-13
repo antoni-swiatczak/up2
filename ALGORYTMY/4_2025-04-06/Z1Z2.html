@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html, body {
+            margin: 0 !important;
+            background-color: #222;
+            width: 100%;
+            height: 100%;
+        }
+        * {
+            font-family: 'Courier New', Courier, monospace;
+            color: #ddd;
+            font-size: 18px;
+        }
+        #action-buttons {
+            width: 100%;
+            height: calc(15% - 1px);
+            border-bottom: 1px solid red;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+        #action-buttons > button {
+            width: 20%;
+            height: 50%;
+            font-size: 18px;
+            border-radius: 0;
+            outline: none;
+            border: 3px solid green;
+            font-weight: bold;
+        }
+        #action-buttons > button:nth-child(1) {
+            border: 3px solid green;
+            background-color: #00ff0022;
+        }
+        #action-buttons > button:nth-child(2) {
+            border: 3px solid red;
+            background-color: #ff000022;
+        }
+        #action-buttons > button:nth-child(3) {
+            border: 3px solid blue;
+            background-color: #0000ff22;
+        }
+        #action-buttons > button:hover {
+            cursor: pointer;
+        }
+        textarea {
+            width: calc(100% - 48px);
+            height: calc(85% - 48px);
+            border: none;
+            outline: none;
+            margin: 0;
+            padding: 24px;
+            resize: none;
+            background-color: #222;
+        }
+    </style>
+</head>
+<body>
+    <div id="action-buttons">
+        <button>COFNIJ</button>
+        <button>WYKONAJ PONOWNIE</button>
+        <button>HISTORIA</button>
+    </div>
+    <textarea placeholder="Notatki..." noresize></textarea>
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const ta = document.getElementsByTagName("textarea")[0];
+
+            const history = new Array();
+            const changes = new Array();
+
+            window.addEventListener("keyup", (e) => {
+                if (document.activeElement.tagName == "TEXTAREA") {
+                    if (e.code == "Space" && ta.value.substring(ta.value.length - 2, ta.value.length - 1) != " ") {
+                        history.push({
+                            action: "+",
+                            word: ta.value.split(" ").slice(-2)[0],
+                            skip: false
+                        });
+                        changes.push(history.length - 1);
+                    } else if (e.code == "Backspace" && ta.value.substring(ta.value.length - 1) != " ") {
+                        // history.push({
+                        //     action: "-",
+                        //     word: ta.value.split(" ").slice(-2)[0],
+                        //     skip: false
+                        // })
+                        // changes.push(history.length - 1);
+                        console.log(ta.value.substring(ta.value.length - 1));
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
