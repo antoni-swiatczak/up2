@@ -139,3 +139,25 @@ y1.printname()
 
 # H #
 
+class Teacher2(Person):
+    def __init__(self, fname, lname):
+        super().__init__(fname, lname)
+        print("Hello!")
+    
+    def printname(self):
+        return super().printname()
+
+y2 = Teacher2("Elizeusz", "Kapustka")
+y2.printname()
+
+class Teacher3(Person):
+    def __init__(self, fname, lname, age):
+        Person.__init__(self, fname, lname)
+        self.age = age
+
+    def printname(self):
+        print(f"Witajcie! Nazywam się {self.fname} {self.lname}, mam {self.age} i jestem nauczycielem.")
+
+y3 = Teacher3("Elizeusz", "Kapustka", 30)
+y3.printname()
+
