@@ -83,3 +83,59 @@ print(o4)
 
 # F #
 
+# nazwa klasy
+class Coordinates5:
+    # deklaracja z jednoczesna definicja atrybutow
+    def __init__(yoyo, x, y, z):
+        yoyo.x = x
+        yoyo.y = y
+        yoyo.z = z
+
+# tworzenie obiektu klasy
+o5 = Coordinates4(-5, 14, 77)
+
+# usuniecie atrybutu (tylko po __init__())
+del o5.x
+
+# usuniecie obiektu
+del o5
+
+# G #
+
+class Person:
+    def __init__(self, fname, lname):
+        self.fname = fname
+        self.lname = lname
+
+    def printname(self):
+        print(self.fname, self.lname)
+
+x = Person("Jan", "Kowalski")
+x.printname()
+
+class Student(Person):
+    pass
+
+x = Student("Piotr", "Nowak")
+x.printname()
+
+class Teacher(Person):
+    def __init__(self, fname, lname, age):
+        Person.__init__(self, fname, lname)
+        self.age = age
+        print("Hello!")
+
+y = Teacher("Elizeusz", "Kapustka", 30)
+y.printname()
+print(y.age)
+
+class Teacher1(Person):
+    def __init__(self, fname, lname):
+        super().__init__(fname, lname)
+        print("Hello!")
+
+y1 = Teacher1("Elizeusz", "Kapustka")
+y1.printname()
+
+# H #
+
