@@ -17,27 +17,28 @@ class PersistentWindow(QWidget):
         self.layout.addWidget(self.image_label)
         self.setLayout(self.layout)
 
-        self.pixmap = None
+        self.original_pixmap = None  # Przechowywanie oryginalnego obrazu
+        self.modified_pixmap = None  # Obraz po edycji
 
     def load_image(self, path):
-        self.pixmap = QPixmap(path)
-        self.update_image_size()
+        self.original_pixmap = QPixmap(path)
+        self.modified_pixmap = self.original_pixmap
+        self.update_image()
 
     def resizeEvent(self, event):
-        if self.pixmap:
-            self.update_image_size()
+        self.update_image()
         super().resizeEvent(event)
 
-    def update_image_size(self):
-        if self.pixmap:
-            scaled_pixmap = self.pixmap.scaled(self.size(), Qt.KeepAspectRatio)
+    def update_image(self):
+        if self.modified_pixmap:
+            scaled_pixmap = self.modified_pixmap.scaled(self.size(), Qt.KeepAspectRatio)
             self.image_label.setPixmap(scaled_pixmap)
 
-    def apply_edits(self, grayscale, mirror, scale, crop_size):
-        if not self.pixmap:
+    def apply_edits(self, grayscale, mirror, scale, crop_percent):
+        if not self.original_pixmap:
             return
 
-        image = self.pixmap.toImage()
+        image = self.original_pixmap.toImage()
 
         if grayscale:
             image = image.convertToFormat(QImage.Format_Grayscale8)
@@ -45,13 +46,13 @@ class PersistentWindow(QWidget):
         if mirror:
             image = image.mirrored(True, False)
 
-        if crop_size > 50:
-            width = min(image.width(), crop_size)
-            height = min(image.height(), crop_size)
-            image = image.copy(0, 0, width, height)
+        if 1 <= crop_percent <= 999:
+            crop_width = int(image.width() * (crop_percent / 100))
+            crop_height = int(image.height() * (crop_percent / 100))
+            image = image.copy(0, 0, crop_width, crop_height)
 
-        scaled_pixmap = QPixmap.fromImage(image).scaled(self.size() * scale / 100, Qt.KeepAspectRatio)
-        self.image_label.setPixmap(scaled_pixmap)
+        self.modified_pixmap = QPixmap.fromImage(image).scaled(self.size() * scale / 100, Qt.KeepAspectRatio)
+        self.update_image()
 
 class OnDemandWindow(QWidget):
     def __init__(self, persistent_window):
@@ -71,16 +72,17 @@ class OnDemandWindow(QWidget):
         self.layout.addWidget(self.mirror_checkbox)
 
         self.scale_slider = QSlider(Qt.Horizontal)
-        self.scale_slider.setMinimum(10)
+        self.scale_slider.setMinimum(50)
         self.scale_slider.setMaximum(200)
         self.scale_slider.setValue(100)
         self.layout.addWidget(QLabel("Przeskalowanie"))
         self.layout.addWidget(self.scale_slider)
 
         self.crop_spinbox = QSpinBox()
-        self.crop_spinbox.setMinimum(50)
-        self.crop_spinbox.setMaximum(300)
-        self.layout.addWidget(QLabel("Kadrowanie"))
+        self.crop_spinbox.setMinimum(1)
+        self.crop_spinbox.setMaximum(999)  # Trzy cyfry
+        self.crop_spinbox.setValue(100)  # Domyślnie 100%
+        self.layout.addWidget(QLabel("Kadrowanie (%)"))
         self.layout.addWidget(self.crop_spinbox)
 
         self.apply_button = QPushButton("Zastosuj")
@@ -93,8 +95,8 @@ class OnDemandWindow(QWidget):
         grayscale = self.grayscale_checkbox.isChecked()
         mirror = self.mirror_checkbox.isChecked()
         scale = self.scale_slider.value()
-        crop_size = self.crop_spinbox.value()
-        self.persistent_window.apply_edits(grayscale, mirror, scale, crop_size)
+        crop_percent = self.crop_spinbox.value()
+        self.persistent_window.apply_edits(grayscale, mirror, scale, crop_percent)
 
 class MainWindow(QMainWindow):
     def __init__(self):
