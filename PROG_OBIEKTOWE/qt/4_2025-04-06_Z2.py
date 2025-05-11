@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QFileDialog, QVBoxLayout, QWidget, QSlider, QCheckBox, QSpinBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QFileDialog, QVBoxLayout, QWidget, QCheckBox, QButtonGroup, QSpinBox
 from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtCore import Qt
 
@@ -17,8 +17,9 @@ class PersistentWindow(QWidget):
         self.layout.addWidget(self.image_label)
         self.setLayout(self.layout)
 
-        self.original_pixmap = None  # Przechowywanie oryginalnego obrazu
-        self.modified_pixmap = None  # Obraz po edycji
+        self.original_pixmap = None
+        self.modified_pixmap = None
+        self.scale_factor = 1.0
 
     def load_image(self, path):
         self.original_pixmap = QPixmap(path)
@@ -31,10 +32,10 @@ class PersistentWindow(QWidget):
 
     def update_image(self):
         if self.modified_pixmap:
-            scaled_pixmap = self.modified_pixmap.scaled(self.size(), Qt.KeepAspectRatio)
+            scaled_pixmap = self.modified_pixmap.scaled(self.size() * self.scale_factor, Qt.KeepAspectRatio)
             self.image_label.setPixmap(scaled_pixmap)
 
-    def apply_edits(self, grayscale, mirror, scale, crop_percent):
+    def apply_edits(self, grayscale, mirror, crop_percent, scale_factor):
         if not self.original_pixmap:
             return
 
@@ -51,7 +52,8 @@ class PersistentWindow(QWidget):
             crop_height = int(image.height() * (crop_percent / 100))
             image = image.copy(0, 0, crop_width, crop_height)
 
-        self.modified_pixmap = QPixmap.fromImage(image).scaled(self.size() * scale / 100, Qt.KeepAspectRatio)
+        self.scale_factor = scale_factor
+        self.modified_pixmap = QPixmap.fromImage(image)
         self.update_image()
 
 class OnDemandWindow(QWidget):
@@ -71,19 +73,28 @@ class OnDemandWindow(QWidget):
         self.mirror_checkbox = QCheckBox("Odbicie lustrzane")
         self.layout.addWidget(self.mirror_checkbox)
 
-        self.scale_slider = QSlider(Qt.Horizontal)
-        self.scale_slider.setMinimum(50)
-        self.scale_slider.setMaximum(200)
-        self.scale_slider.setValue(100)
-        self.layout.addWidget(QLabel("Przeskalowanie"))
-        self.layout.addWidget(self.scale_slider)
-
         self.crop_spinbox = QSpinBox()
         self.crop_spinbox.setMinimum(1)
-        self.crop_spinbox.setMaximum(999)  # Trzy cyfry
-        self.crop_spinbox.setValue(100)  # Domyślnie 100%
+        self.crop_spinbox.setMaximum(999)
+        self.crop_spinbox.setValue(100)
         self.layout.addWidget(QLabel("Kadrowanie (%)"))
         self.layout.addWidget(self.crop_spinbox)
+
+        # Grupa checkboxów dla skalowania
+        self.scale_group = QButtonGroup()
+        self.scale_options = {
+            0.25: QCheckBox("x0.25"),
+            0.5: QCheckBox("x0.5"),
+            1.0: QCheckBox("x1.0"),
+            1.5: QCheckBox("x1.5"),
+            2.0: QCheckBox("x2.0")
+        }
+
+        for factor, checkbox in self.scale_options.items():
+            self.scale_group.addButton(checkbox)
+            self.layout.addWidget(checkbox)
+
+        self.scale_options[1.0].setChecked(True)
 
         self.apply_button = QPushButton("Zastosuj")
         self.apply_button.clicked.connect(self.apply_changes)
@@ -94,9 +105,9 @@ class OnDemandWindow(QWidget):
     def apply_changes(self):
         grayscale = self.grayscale_checkbox.isChecked()
         mirror = self.mirror_checkbox.isChecked()
-        scale = self.scale_slider.value()
         crop_percent = self.crop_spinbox.value()
-        self.persistent_window.apply_edits(grayscale, mirror, scale, crop_percent)
+        selected_scale = next((factor for factor, checkbox in self.scale_options.items() if checkbox.isChecked()), 1.0)
+        self.persistent_window.apply_edits(grayscale, mirror, crop_percent, selected_scale)
 
 class MainWindow(QMainWindow):
     def __init__(self):
