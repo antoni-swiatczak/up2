@@ -4,7 +4,7 @@ https://mateusz-jarczynski.pl/up/
 
 # PySide 6
 
-python -m venv env
+py -m venv env
 
 env\Scripts\activate.bat
 
