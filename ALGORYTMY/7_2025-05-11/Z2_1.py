@@ -18,7 +18,7 @@ def apply_flood_fill_dfs(bitmap, start, new_color):
     if old_color != new_color:
         flood_fill_dfs(bitmap, x, y, old_color, new_color)
 
-# Przykład użycia
+# przykład użycia
 bitmap = [
     [9, 8, 7, 6, 5, 4, 3, 2, 1],
     [8, 1, 1, 8, 8, 1, 1, 1, 2],
