@@ -8,6 +8,8 @@ def count_words_by_letter(text):
 
     letter_count = defaultdict(int)
 
+    print(letter_count)
+
     for word in words:
         if word:  # Sprawdzenie, czy słowo nie jest puste
             letter_count[word[0]] += 1

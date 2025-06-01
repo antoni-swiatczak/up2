@@ -11,14 +11,14 @@ def horner_hash(s, base=31, size=100):
 
 # 3. Funkcja haszująca FNV-1a (szybka i dobrze rozpraszająca)
 def fnv1a_hash(s, size=100):
-    FNV_OFFSET = 0x811c9dc5
-    FNV_PRIME = 0x01000193
+    FNV_OFFSET = 0x811c9dc5  # 2166136261 (wartość początkowa) - sprawdzona liczba dla dobrego rozpraszania
+    FNV_PRIME = 0x01000193   # 16777619 (stała mnożnika) - liczba pierwsza
 
     hash_value = FNV_OFFSET
     for char in s:
-        hash_value ^= ord(char)
-        hash_value *= FNV_PRIME
-        hash_value &= 0xFFFFFFFF  # Ograniczenie do 32 bitów
+        hash_value ^= ord(char) # XOR z wartością ASCII znaku
+        hash_value *= FNV_PRIME # Mnożenie przez FNV_PRIME dla lepszego rozproszenia
+        hash_value &= 0xFFFFFFFF # Ograniczenie do dolnych 32 bitów
     return hash_value % size
 
 # Testowanie funkcji na przykładowej liście stringów
